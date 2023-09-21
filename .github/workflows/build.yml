@@ -14,7 +14,15 @@ jobs:
         with:
           go-version: '1.21'
 
+      - name: Cache Ollama
+        id: cache-ollama
+        uses: actions/cache@v3
+        with:
+          path: ollama
+          key: ${{ runner.os }}-ollama
+
       - name: Build ollama
+        if: steps.cache-ollama.outputs.cache-hit != 'true'
         run: git clone --recursive https://github.com/jmorganca/ollama && cd ollama && go generate ./... && go build -v
 
       - name: Test ollama
