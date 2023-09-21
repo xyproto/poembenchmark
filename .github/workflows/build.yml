@@ -1,1 +1,21 @@
-hi
+name: Go package
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+
+      - name: Build ollama
+        run: git clone --recursive https://github.com/jmorganca/ollama && cd ollama && go generate ./... && go build -v
+
+      - name: Test ollama
+        run: ollama/ollama --help
