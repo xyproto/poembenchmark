@@ -53,7 +53,11 @@ jobs:
         run: ollama/ollama pull ${{ matrix.model }}
 
       - name: Generate a poem
-        run: ollama/ollama run ${{ matrix.model }} "$(cat prompt.txt)" > ${{ matrix.model | replace(':', '_') | replace('-', '_') }}_result.txt
+        run: |
+          MODEL_NAME=$(echo "${{ matrix.model }}" | tr ':-' '__')
+          ollama/ollama run ${{ matrix.model }} "$(cat prompt.txt)" > "${MODEL_NAME}_result.txt"
 
       - name: Output the poem
-        run: cat ${{ matrix.model | replace(':', '_') | replace('-', '_') }}_result.txt
+        run: |
+          MODEL_NAME=$(echo "${{ matrix.model }}" | tr ':-' '__')
+          cat "${MODEL_NAME}_result.txt"
