@@ -59,6 +59,9 @@ jobs:
         with:
           name: ollama-artifacts
 
+      - name: Set execute permissions for ollama
+        run: chmod +x ollama/ollama
+
       - name: Run ollama in the background
         run: ollama/ollama serve &
 
