@@ -25,5 +25,14 @@ jobs:
         if: steps.cache-ollama.outputs.cache-hit != 'true'
         run: git clone --recursive https://github.com/jmorganca/ollama && cd ollama && go generate ./... && go build -v
 
-      - name: Test ollama
+      - name: Test the ollama executable
         run: ollama/ollama --help
+
+      - name: Run ollama in the background
+        run: ollama/ollama serve &
+
+      - name: Pull an image
+        run: ollama/ollama pull llama2:chat
+
+      - name: Generate a poem
+        run: ollama/ollama run llama2:chat "$(cat prompt.txt)"
