@@ -3,11 +3,11 @@ name: Go package
 on: [push]
 
 jobs:
-  build:
-
+  setup-ollama:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v4
@@ -18,7 +18,9 @@ jobs:
         id: cache-ollama
         uses: actions/cache@v3
         with:
-          path: ollama
+          path: |
+            ollama
+            .ollama
           key: ${{ runner.os }}-ollama
 
       - name: Build ollama
@@ -28,11 +30,30 @@ jobs:
       - name: Test the ollama executable
         run: ollama/ollama --help
 
+  run-model:
+    needs: setup-ollama
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        model:
+          - 'llama2:chat'
+          - 'llama2:text'
+          #- 'mistral:7b-text'
+          #- 'mistral:7b-instruct'
+          #- 'wizardlm-uncensored:13b'
+          #- 'codeup:13b-llama2-chat'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Run ollama in the background
         run: ollama/ollama serve &
 
       - name: Pull an image
-        run: ollama/ollama pull llama2:chat
+        run: ollama/ollama pull ${{ matrix.model }}
 
       - name: Generate a poem
-        run: ollama/ollama run llama2:chat "$(cat prompt.txt)"
+        run: ollama/ollama run ${{ matrix.model }} "$(cat prompt.txt)" > ${{ matrix.model | replace(':', '_') | replace('-', '_') }}_result.txt
+
+      - name: Output the poem
+        run: cat ${{ matrix.model | replace(':', '_') | replace('-', '_') }}_result.txt
