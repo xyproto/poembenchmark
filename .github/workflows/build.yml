@@ -78,15 +78,10 @@ jobs:
           MODEL_NAME=$(echo "${{ matrix.model }}" | tr ':-' '__')
           cat "${MODEL_NAME}_result.txt"
 
-      - name: Move result files to results directory
-        run: |
-          MODEL_NAME=$(echo "${{ matrix.model }}" | tr ':-' '__')
-          mv "${MODEL_NAME}_result.txt" results/
-
       - name: Commit and push result files
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git add results/*.txt
+          git add *_result.txt
           git commit -m "Add result files from GitHub Actions"
           git push
