@@ -30,6 +30,14 @@ jobs:
       - name: Test the ollama executable
         run: ollama/ollama --help
 
+      - name: Upload ollama and models as artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: ollama-artifacts
+          path: |
+            ollama/ollama
+            .ollama/
+
   run-model:
     needs: setup-ollama
     runs-on: ubuntu-latest
@@ -45,6 +53,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Download ollama and models artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: ollama-artifacts
 
       - name: Run ollama in the background
         run: ollama/ollama serve &
